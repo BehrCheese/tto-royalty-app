@@ -27,6 +27,7 @@ def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, mar
         })
     
     df = pd.DataFrame(results)
+    df.rename(columns={"Market Size ($M)": "Market Size", "Penetrated Market ($M)": "Penetrated Market", "Annual Royalty ($M)": "Annual Royalty"}, inplace=True)
     return df, total_royalty
 
 # Streamlit Web UI

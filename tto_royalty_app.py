@@ -69,20 +69,23 @@ if st.button("Calculate Royalty Projections"):
     
     # Adjust figure size based on royalty term
     fig_width = min(15, 5 + royalty_term / 5)
-    fig, ax1 = plt.subplots(figsize=(fig_width, 5))
+    fig_height = max(5, 10 - royalty_term / 10)  # Adjust height to prevent label squishing
+    fig, ax1 = plt.subplots(figsize=(fig_width, fig_height))
     ax2 = ax1.twinx()
     
     ax1.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green', linewidth=2)
     ax1.plot(df["Year"], df["Market Size"], label="Projected Market Size", linestyle='dashed', color='blue', alpha=0.5)
     ax2.plot(df["Year"], df["Annual Royalty"], label="Annual Royalty Revenue", marker="s", color='red', linewidth=2)
     
-    ax1.set_xlabel("Year")
-    ax1.set_ylabel("Market Size & Penetration ($M)", color='blue')
-    ax2.set_ylabel("Annual Royalty Revenue ($M)", color='red')
-    ax1.set_title("Market Growth, Penetration & Royalty Projections")
-    ax1.legend(loc='upper left')
-    ax2.legend(loc='upper right')
+    ax1.set_xlabel("Year", fontsize=10)
+    ax1.set_ylabel("Market Size & Penetration ($M)", color='blue', fontsize=10)
+    ax2.set_ylabel("Annual Royalty Revenue ($M)", color='red', fontsize=10)
+    ax1.set_title("Market Growth, Penetration & Royalty Projections", fontsize=12)
+    ax1.legend(loc='upper left', fontsize=8)
+    ax2.legend(loc='upper right', fontsize=8)
     ax1.grid()
+    plt.xticks(rotation=45, fontsize=8)  # Rotate x-axis labels for readability
+    plt.yticks(fontsize=8)
     
     st.pyplot(fig)
     
@@ -94,4 +97,4 @@ if st.button("Calculate Royalty Projections"):
     if total_royalty >= 30_000_000:
         st.markdown("<h3 style='text-align: center; color: darkblue;'>🎉 Congrats! This is a High-Value Opportunity (HVO)! 🎉</h3>", unsafe_allow_html=True)
     else:
-        st.markdown("<h3 style='text-align: center; color: red;'>😞 Unfortunately, this opportunity is expected to generate less than $30M in royalties.</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: red;'>😞 Unfortunately, this opportunity is expected to generate less than $30M in royalties. 😞</h3>", unsafe_allow_html=True)

@@ -12,7 +12,7 @@ def format_large_number(value):
 # Function to calculate market penetration with a peak
 def calculate_penetration_curve(years, initial_penetration):
     penetration_rates = [initial_penetration / 100]
-    peak_penetration = min(0.30, penetration_rates[0] + 0.25)  # Cap peak at 30%
+    peak_penetration = initial_penetration / 100 + 0.25  # Allow natural peak growth
     
     for i in range(1, years):
         if i < 3:
@@ -23,7 +23,7 @@ def calculate_penetration_curve(years, initial_penetration):
             penetration_rates.append(peak_penetration)  # Peak
         else:
             penetration_rates.append(penetration_rates[-1] - 0.05)  # Decline/Stabilization
-        penetration_rates[-1] = max(min(penetration_rates[-1], peak_penetration), penetration_rates[0])
+        penetration_rates[-1] = max(penetration_rates[-1], penetration_rates[0])  # Ensure it doesn't go below initial
     return penetration_rates[:years]
 
 # Function to calculate royalty revenue
@@ -58,7 +58,7 @@ market_entry_year = st.number_input("Anticipated Year of Market Entry", min_valu
 royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=10, value=10)
 market_size = st.number_input("Current Market Size ($M)", min_value=1, value=500, step=1)
 cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=1, max_value=20, value=6, step=1)
-initial_penetration = st.number_input("Initial Market Penetration (%)", min_value=1, max_value=10, value=3, step=1)
+initial_penetration = st.number_input("Initial Market Penetration (%)", min_value=1, max_value=100, value=10, step=1)
 
 if st.button("Calculate Royalty Projections"):
     df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, initial_penetration)

@@ -2,6 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
+# Function to format large numbers
+def format_large_number(value):
+    if value >= 1000:
+        return f"${value / 1000:.2f}B"
+    return f"${value:.2f}M"
+
 # Function to calculate royalty revenue
 def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration):
     projected_market = market_size * 1_000_000  # Convert from $M to $
@@ -13,7 +19,7 @@ def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, mar
         penetrated_market = projected_market * (market_penetration / 100)
         annual_royalty = penetrated_market * (royalty_rate / 100)
         total_royalty += annual_royalty
-        results.append({"Year": year, "Market Size ($M)": projected_market / 1_000_000, "Penetrated Market ($M)": penetrated_market / 1_000_000, "Annual Royalty ($M)": annual_royalty / 1_000_000})
+        results.append({"Year": str(year), "Market Size ($M)": projected_market / 1_000_000, "Penetrated Market ($M)": penetrated_market / 1_000_000, "Annual Royalty ($M)": annual_royalty / 1_000_000})
     
     df = pd.DataFrame(results)
     return df, total_royalty
@@ -30,6 +36,11 @@ cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=0.1, m
 market_penetration = st.slider("Expected Market Penetration (%)", min_value=1.0, max_value=100.0, value=10.0)
 
 df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
+
+# Format market size and royalty revenue for display
+df["Market Size ($M)"] = df["Market Size ($M)"].apply(lambda x: format_large_number(x))
+df["Penetrated Market ($M)"] = df["Penetrated Market ($M)"].apply(lambda x: format_large_number(x))
+df["Annual Royalty ($M)"] = df["Annual Royalty ($M)"].apply(lambda x: format_large_number(x))
 
 # Display Data Table
 st.subheader("📈 Annual Royalty Revenue Breakdown")
@@ -55,7 +66,7 @@ st.pyplot(fig)
 
 # Display Financial Estimates
 st.subheader("💰 Financial Estimates")
-st.write(f"**Total Estimated Royalty Revenue Over {royalty_term} Years:** ${round(total_royalty / 1_000_000, 2)}M")
+st.write(f"**Total Estimated Royalty Revenue Over {royalty_term} Years:** {format_large_number(total_royalty / 1_000_000)}")
 
 # High-Value Opportunity (HVO) Indicator
 st.subheader("📊 High-Value Opportunity Indicator")

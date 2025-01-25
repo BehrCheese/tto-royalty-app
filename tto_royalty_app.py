@@ -19,7 +19,7 @@ def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, mar
     return df, total_royalty
 
 # Streamlit Web UI
-st.title("📊 AI-Powered Royalty Valuation & Market Analysis Tool")
+st.title("📊 Royalty Analysis")
 
 # User Inputs
 royalty_rate = st.number_input("Minimum Expected Royalty Rate (%)", min_value=0.1, max_value=20.0, value=5.0)
@@ -35,16 +35,21 @@ df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, r
 st.subheader("📈 Annual Royalty Revenue Breakdown")
 st.dataframe(df)
 
-# Plot Graphs
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.plot(df["Year"], df["Market Size ($M)"], label="Projected Market Size ($M)", marker="o")
-ax.plot(df["Year"], df["Penetrated Market ($M)"], label="Penetrated Market ($M)", marker="^")
-ax.plot(df["Year"], df["Annual Royalty ($M)"], label="Annual Royalty Revenue ($M)", marker="s")
-ax.set_xlabel("Year")
-ax.set_ylabel("Value ($M)")
-ax.set_title("Market Growth, Penetration & Royalty Projections")
-ax.legend()
-ax.grid()
+# Plot Graphs with Dual Y-Axis
+fig, ax1 = plt.subplots(figsize=(10, 5))
+ax2 = ax1.twinx()
+
+ax1.plot(df["Year"], df["Market Size ($M)"], label="Projected Market Size ($M)", marker="o", color='blue')
+ax1.plot(df["Year"], df["Penetrated Market ($M)"], label="Penetrated Market ($M)", marker="^", color='green')
+ax2.plot(df["Year"], df["Annual Royalty ($M)"], label="Annual Royalty Revenue ($M)", marker="s", color='red')
+
+ax1.set_xlabel("Year")
+ax1.set_ylabel("Market Size & Penetration ($M)", color='blue')
+ax2.set_ylabel("Annual Royalty Revenue ($M)", color='red')
+ax1.set_title("Market Growth, Penetration & Royalty Projections")
+ax1.legend(loc="upper left")
+ax2.legend(loc="upper right")
+ax1.grid()
 
 st.pyplot(fig)
 

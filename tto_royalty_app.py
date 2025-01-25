@@ -9,21 +9,22 @@ def format_large_number(value):
         return f"${value / 1000:.2f}B"
     return f"${value:.2f}M"
 
-# Function to calculate market penetration with a peak
+# Function to calculate market penetration with a smoother peak and stabilization
 def calculate_penetration_curve(years, initial_penetration):
     penetration_rates = [initial_penetration / 100]
-    peak_penetration = initial_penetration / 100 + 0.25  # Allow natural peak growth
+    peak_penetration = min(0.8, initial_penetration / 100 + 0.25)  # Allow natural peak growth but cap at 80%
+    stabilization_level = peak_penetration * 0.8  # Stabilize at 80% of peak
     
     for i in range(1, years):
         if i < 3:
             penetration_rates.append(penetration_rates[-1] + 0.05)  # Slow uptake
         elif i < 7:
-            penetration_rates.append(penetration_rates[-1] + 0.10)  # Rapid growth
+            penetration_rates.append(penetration_rates[-1] + 0.07)  # Moderate growth
         elif i == 7 or i == 8:
             penetration_rates.append(peak_penetration)  # Peak
         else:
-            penetration_rates.append(penetration_rates[-1] - 0.05)  # Decline/Stabilization
-        penetration_rates[-1] = max(penetration_rates[-1], penetration_rates[0])  # Ensure it doesn't go below initial
+            penetration_rates.append(penetration_rates[-1] - 0.02)  # Gradual decline, avoiding sharp drops
+        penetration_rates[-1] = max(penetration_rates[-1], stabilization_level)  # Ensure it stabilizes, no drastic drops
     return penetration_rates[:years]
 
 # Function to calculate royalty revenue
@@ -84,10 +85,6 @@ if st.button("Calculate Royalty Projections"):
     ax1.legend(loc='upper left', fontsize=8)
     ax2.legend(loc='upper right', fontsize=8)
     ax1.grid()
-    
-    # Adjust x-axis ticks for better spacing
-    tick_spacing = max(1, royalty_term // 10)  # Reduce tick density for long royalty terms
-    ax1.set_xticks(df["Year"][::tick_spacing])
     plt.xticks(rotation=45, fontsize=8)
     plt.yticks(fontsize=8)
     
@@ -95,7 +92,7 @@ if st.button("Calculate Royalty Projections"):
     
     # Display High-Value Opportunity Notification
     st.markdown("---")
-    st.markdown("<h2 style='text-align: center; color: black;'>Total Estimated Royalty Revenue".format(royalty_term), unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: black;'>Total Estimated Royalty Revenue Over {} Years</h2>".format(royalty_term), unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(format_large_number(total_royalty / 1_000_000)), unsafe_allow_html=True)
     
     if total_royalty >= 30_000_000:

@@ -51,8 +51,8 @@ if st.button("Calculate Royalty Projections"):
     fig, ax1 = plt.subplots(figsize=(10, 5))
     ax2 = ax1.twinx()
     
-    ax1.plot(df["Year"], df["Market Size"], label="Projected Market Size", linestyle='dashed', color='blue', alpha=0.5)
     ax1.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green', linewidth=2)
+    ax1.plot(df["Year"], df["Market Size"], label="Projected Market Size", linestyle='dashed', color='blue', alpha=0.5)
     ax2.plot(df["Year"], df["Annual Royalty"], label="Annual Royalty Revenue", marker="s", color='red', linewidth=2)
     
     ax1.set_xlabel("Year")

@@ -68,8 +68,8 @@ if st.button("Calculate Royalty Projections"):
     st.dataframe(df)
     
     # Adjust figure size based on royalty term
-    fig_width = min(15, 5 + royalty_term / 5)
-    fig_height = max(5, 10 - royalty_term / 10)  # Adjust height to prevent label squishing
+    fig_width = max(10, min(15, 5 + royalty_term / 10))
+    fig_height = max(5, min(8, 6 + royalty_term / 20))  # Adjust height to prevent label squishing
     fig, ax1 = plt.subplots(figsize=(fig_width, fig_height))
     ax2 = ax1.twinx()
     
@@ -84,7 +84,11 @@ if st.button("Calculate Royalty Projections"):
     ax1.legend(loc='upper left', fontsize=8)
     ax2.legend(loc='upper right', fontsize=8)
     ax1.grid()
-    plt.xticks(rotation=45, fontsize=8)  # Rotate x-axis labels for readability
+    
+    # Adjust x-axis ticks for better spacing
+    tick_spacing = max(1, royalty_term // 10)  # Reduce tick density for long royalty terms
+    ax1.set_xticks(df["Year"][::tick_spacing])
+    plt.xticks(rotation=45, fontsize=8)
     plt.yticks(fontsize=8)
     
     st.pyplot(fig)

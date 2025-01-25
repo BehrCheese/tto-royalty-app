@@ -36,36 +36,37 @@ market_size = st.number_input("Current Market Size ($M)", min_value=1, value=500
 cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=0.1, max_value=20.0, value=6.0)
 market_penetration = st.number_input("Expected Market Penetration (%)", min_value=1.0, max_value=100.0, value=10.0, step=0.1)
 
-df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
-
-# Display Data Table
-st.subheader("📈 Annual Royalty Revenue Breakdown")
-st.dataframe(df)
-
-# Dual Y-Axis Plot
-fig, ax1 = plt.subplots(figsize=(10, 5))
-ax2 = ax1.twinx()
-
-ax1.plot(df["Year"], df["Market Size"], label="Projected Market Size", linestyle='dashed', color='blue', alpha=0.5)
-ax1.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green', linewidth=2)
-ax2.plot(df["Year"], df["Annual Royalty"], label="Annual Royalty Revenue", marker="s", color='red', linewidth=2)
-
-ax1.set_xlabel("Year")
-ax1.set_ylabel("Market Size & Penetration ($M)", color='blue')
-ax2.set_ylabel("Annual Royalty Revenue ($M)", color='red')
-ax1.set_title("Market Growth, Penetration & Royalty Projections")
-ax1.legend(loc='upper left')
-ax2.legend(loc='upper right')
-ax1.grid()
-
-st.pyplot(fig)
-
-# Display High-Value Opportunity Notification
-st.markdown("---")
-st.markdown(f"## 🎉 **Total Estimated Royalty Revenue Over {royalty_term} Years: {format_large_number(total_royalty / 1_000_000)}**")
-
-if total_royalty >= 30_000_000:
-    with st.spinner("Analyzing opportunity..."):
-        time.sleep(1)
-    st.balloons()
-    st.success("🎊 **Congrats! This is a High-Value Opportunity (HVO) expected to generate over $30M in royalties!** 🎊")
+if st.button("Calculate Royalty Projections"):
+    df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
+    
+    # Display Data Table
+    st.subheader("📈 Annual Royalty Revenue Breakdown")
+    st.dataframe(df)
+    
+    # Dual Y-Axis Plot
+    fig, ax1 = plt.subplots(figsize=(10, 5))
+    ax2 = ax1.twinx()
+    
+    ax1.plot(df["Year"], df["Market Size"], label="Projected Market Size", linestyle='dashed', color='blue', alpha=0.5)
+    ax1.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green', linewidth=2)
+    ax2.plot(df["Year"], df["Annual Royalty"], label="Annual Royalty Revenue", marker="s", color='red', linewidth=2)
+    
+    ax1.set_xlabel("Year")
+    ax1.set_ylabel("Market Size & Penetration ($M)", color='blue')
+    ax2.set_ylabel("Annual Royalty Revenue ($M)", color='red')
+    ax1.set_title("Market Growth, Penetration & Royalty Projections")
+    ax1.legend(loc='upper left')
+    ax2.legend(loc='upper right')
+    ax1.grid()
+    
+    st.pyplot(fig)
+    
+    # Display High-Value Opportunity Notification
+    st.markdown("---")
+    st.markdown(f"# 🎉 **Total Estimated Royalty Revenue Over {royalty_term} Years: {format_large_number(total_royalty / 1_000_000)}**")
+    
+    if total_royalty >= 30_000_000:
+        with st.spinner("Analyzing opportunity..."):
+            time.sleep(1)
+        st.balloons()
+        st.markdown("# 🎊 **Congrats! This is a High-Value Opportunity (HVO)!** 🎊")

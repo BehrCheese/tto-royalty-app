@@ -19,7 +19,7 @@ def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, mar
         penetrated_market = projected_market * (market_penetration / 100)
         annual_royalty = penetrated_market * (royalty_rate / 100)
         total_royalty += annual_royalty
-        results.append({"Year": str(year), "Market Size ($M)": projected_market / 1_000_000, "Penetrated Market ($M)": penetrated_market / 1_000_000, "Annual Royalty ($M)": annual_royalty / 1_000_000})
+        results.append({"Year": year, "Market Size": projected_market / 1_000_000, "Penetrated Market": penetrated_market / 1_000_000, "Annual Royalty": annual_royalty / 1_000_000})
     
     df = pd.DataFrame(results)
     return df, total_royalty
@@ -37,30 +37,21 @@ market_penetration = st.number_input("Expected Market Penetration (%)", min_valu
 
 df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
 
-# Format market size and royalty revenue for display
-df["Market Size ($M)"] = df["Market Size ($M)"].apply(lambda x: format_large_number(x))
-df["Penetrated Market ($M)"] = df["Penetrated Market ($M)"].apply(lambda x: format_large_number(x))
-df["Annual Royalty ($M)"] = df["Annual Royalty ($M)"].apply(lambda x: format_large_number(x))
-
 # Display Data Table
 st.subheader("📈 Annual Royalty Revenue Breakdown")
 st.dataframe(df)
 
-# Plot Graphs with Dual Y-Axis
-fig, ax1 = plt.subplots(figsize=(10, 5))
-ax2 = ax1.twinx()
+# Simplified Plot
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.plot(df["Year"], df["Market Size"], label="Projected Market Size", marker="o", color='blue')
+ax.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green')
+ax.plot(df["Year"], df["Annual Royalty"], label="Annual Royalty Revenue", marker="s", color='red')
 
-ax1.plot(df["Year"], df["Market Size ($M)"], label="Projected Market Size ($M)", marker="o", color='blue')
-ax1.plot(df["Year"], df["Penetrated Market ($M)"], label="Penetrated Market ($M)", marker="^", color='green')
-ax2.plot(df["Year"], df["Annual Royalty ($M)"], label="Annual Royalty Revenue ($M)", marker="s", color='red')
-
-ax1.set_xlabel("Year")
-ax1.set_ylabel("Market Size & Penetration ($M)", color='blue')
-ax2.set_ylabel("Annual Royalty Revenue ($M)", color='red')
-ax1.set_title("Market Growth, Penetration & Royalty Projections")
-ax1.legend(loc="upper left")
-ax2.legend(loc="upper right")
-ax1.grid()
+ax.set_xlabel("Year")
+ax.set_ylabel("Value ($M)")
+ax.set_title("Market Growth, Penetration & Royalty Projections")
+ax.legend()
+ax.grid()
 
 st.pyplot(fig)
 

@@ -63,10 +63,10 @@ if st.button("Calculate Royalty Projections"):
     
     # Display High-Value Opportunity Notification
     st.markdown("---")
-    st.markdown(f"# 🎉 **Total Estimated Royalty Revenue Over {royalty_term} Years: {format_large_number(total_royalty / 1_000_000)}**")
+    st.markdown(f"# 🎉 **TOTAL ESTIMATED ROYALTY REVENUE: `{format_large_number(total_royalty / 1_000_000)}`**")
     
     if total_royalty >= 30_000_000:
         with st.spinner("Analyzing opportunity..."):
             time.sleep(1)
         st.balloons()
-        st.markdown("# 🎊 **Congrats! This is a High-Value Opportunity (HVO)!** 🎊")
+        st.markdown("# 🎊 **CONGRATS! THIS IS A HIGH-VALUE OPPORTUNITY (HVO)!** 🎊")

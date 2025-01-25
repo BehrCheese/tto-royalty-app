@@ -44,7 +44,7 @@ if st.button("Calculate Royalty Projections"):
     df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
     
     # Display Data Table with Proper Formatting
-    st.subheader("📈 Annual Royalty Revenue Breakdown (Values in Millions or Billions)")
+    st.subheader("📈 Annual Royalty Revenue Breakdown - Values in Millions or Billions")
     st.dataframe(df.style.set_properties(subset=["Annual Royalty ($M)"], **{"font-weight": "bold"}))
     
     # Dual Y-Axis Plot
@@ -72,3 +72,5 @@ if st.button("Calculate Royalty Projections"):
     
     if total_royalty >= 30_000_000:
         st.markdown("<h3 style='text-align: center; color: darkblue;'>🎉 Congrats! This is a High-Value Opportunity (HVO)! 🎉</h3>", unsafe_allow_html=True)
+    else:
+        st.markdown("<h3 style='text-align: center; color: red;'>😞 Unfortunately, this opportunity is expected to generate less than $30M in royalties.</h3>", unsafe_allow_html=True)

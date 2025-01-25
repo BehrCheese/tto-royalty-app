@@ -3,16 +3,17 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Function to calculate royalty revenue
-def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr):
+def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration):
     projected_market = market_size * 1_000_000  # Convert from $M to $
     total_royalty = 0
     results = []
     
     for year in range(market_entry_year, market_entry_year + royalty_term):
         projected_market *= (1 + cagr / 100)
-        annual_royalty = projected_market * (royalty_rate / 100)
+        penetrated_market = projected_market * (market_penetration / 100)
+        annual_royalty = penetrated_market * (royalty_rate / 100)
         total_royalty += annual_royalty
-        results.append({"Year": year, "Market Size ($M)": projected_market / 1_000_000, "Annual Royalty ($M)": annual_royalty / 1_000_000})
+        results.append({"Year": year, "Market Size ($M)": projected_market / 1_000_000, "Penetrated Market ($M)": penetrated_market / 1_000_000, "Annual Royalty ($M)": annual_royalty / 1_000_000})
     
     df = pd.DataFrame(results)
     return df, total_royalty
@@ -26,8 +27,9 @@ market_entry_year = st.number_input("Anticipated Year of Market Entry", min_valu
 royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=20, value=10)
 market_size = st.number_input("Current Market Size ($M)", min_value=1.0, value=500.0)
 cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=0.1, max_value=20.0, value=6.0)
+market_penetration = st.slider("Expected Market Penetration (%)", min_value=1.0, max_value=100.0, value=10.0)
 
-df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr)
+df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
 
 # Display Data Table
 st.subheader("📈 Annual Royalty Revenue Breakdown")
@@ -36,10 +38,11 @@ st.dataframe(df)
 # Plot Graphs
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.plot(df["Year"], df["Market Size ($M)"], label="Projected Market Size ($M)", marker="o")
+ax.plot(df["Year"], df["Penetrated Market ($M)"], label="Penetrated Market ($M)", marker="^")
 ax.plot(df["Year"], df["Annual Royalty ($M)"], label="Annual Royalty Revenue ($M)", marker="s")
 ax.set_xlabel("Year")
 ax.set_ylabel("Value ($M)")
-ax.set_title("Market Growth & Royalty Projections")
+ax.set_title("Market Growth, Penetration & Royalty Projections")
 ax.legend()
 ax.grid()
 

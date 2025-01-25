@@ -88,7 +88,7 @@ if st.button("Calculate Royalty Projections"):
     
     # Display High-Value Opportunity Notification
     st.markdown("---")
-    st.markdown("<h2 style='text-align: center; color: black;'>Total Estimated Royalty Revenue Over {} Years</h2>".format(royalty_term), unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: black;'>Total Estimated Royalty Revenue".format(royalty_term), unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(format_large_number(total_royalty / 1_000_000)), unsafe_allow_html=True)
     
     if total_royalty >= 30_000_000:

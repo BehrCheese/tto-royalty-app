@@ -55,7 +55,7 @@ st.title("📊 Royalty Analysis")
 # User Inputs
 royalty_rate = st.number_input("Minimum Expected Royalty Rate (%)", min_value=0.1, max_value=20.0, value=5.0, step=0.1)
 market_entry_year = st.number_input("Anticipated Year of Market Entry", min_value=2024, max_value=2050, value=2026, step=1)
-royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=35, value=10)
+royalty_term = st.slider("Expected Royalty Term (Years)", min_value=1, max_value=35, value=10)
 market_size = st.number_input("Current Market Size ($M)", min_value=1, value=500, step=1)
 cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=1, max_value=20, value=6, step=1)
 initial_penetration = st.number_input("Initial Market Penetration (%)", min_value=1, max_value=100, value=10, step=1)
@@ -67,8 +67,9 @@ if st.button("Calculate Royalty Projections"):
     st.subheader("📈 Annual Royalty Revenue Breakdown")
     st.dataframe(df)
     
-    # Dual Y-Axis Plot
-    fig, ax1 = plt.subplots(figsize=(10, 5))
+    # Adjust figure size based on royalty term
+    fig_width = min(15, 5 + royalty_term / 5)
+    fig, ax1 = plt.subplots(figsize=(fig_width, 5))
     ax2 = ax1.twinx()
     
     ax1.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green', linewidth=2)
@@ -87,7 +88,7 @@ if st.button("Calculate Royalty Projections"):
     
     # Display High-Value Opportunity Notification
     st.markdown("---")
-    st.markdown("<h2 style='text-align: center; color: black;'>Total Estimated Royalty Revenue".format(royalty_term), unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: black;'>Total Estimated Royalty Revenue Over {} Years</h2>".format(royalty_term), unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(format_large_number(total_royalty / 1_000_000)), unsafe_allow_html=True)
     
     if total_royalty >= 30_000_000:

@@ -33,7 +33,7 @@ market_entry_year = st.number_input("Anticipated Year of Market Entry", min_valu
 royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=20, value=10)
 market_size = st.number_input("Current Market Size ($M)", min_value=1, value=500, step=1)
 cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=0.1, max_value=20.0, value=6.0)
-market_penetration = st.number_input("Expected Market Penetration (%)", min_value=1.0, max_value=100.0, value=10.0, step=0.1)
+market_penetration = st.number_input("Expected Market Penetration (%)", min_value=5, max_value=100, value=10, step=5)
 
 if st.button("Calculate Royalty Projections"):
     df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
@@ -62,8 +62,8 @@ if st.button("Calculate Royalty Projections"):
     
     # Display High-Value Opportunity Notification
     st.markdown("---")
-    st.markdown(f"## **Total Estimated Royalty Revenue Over {royalty_term} Years:**")
-    st.markdown(f"# `{format_large_number(total_royalty / 1_000_000)}`")
+    st.markdown("<h2 style='text-align: center; color: black;'>Total Estimated Royalty Revenue Over {} Years</h2>".format(royalty_term), unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: green;'>{}</h1>".format(format_large_number(total_royalty / 1_000_000)), unsafe_allow_html=True)
     
     if total_royalty >= 30_000_000:
-        st.markdown("## 🎉 **Congrats! This is a High-Value Opportunity (HVO)!**")
+        st.markdown("<h3 style='text-align: center; color: darkblue;'>🎉 Congrats! This is a High-Value Opportunity (HVO)! 🎉</h3>", unsafe_allow_html=True)

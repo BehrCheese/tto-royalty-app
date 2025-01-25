@@ -84,7 +84,11 @@ if st.button("Calculate Royalty Projections"):
     ax1.legend(loc='upper left', fontsize=8)
     ax2.legend(loc='upper right', fontsize=8)
     ax1.grid()
-    plt.xticks(rotation=45, fontsize=8)  # Rotate x-axis labels for readability
+    
+    # Adjust x-axis ticks for better spacing
+    tick_spacing = max(1, royalty_term // 10)  # Reduce tick density for long royalty terms
+    ax1.set_xticks(df["Year"][::tick_spacing])
+    plt.xticks(rotation=45, fontsize=8)
     plt.yticks(fontsize=8)
     
     st.pyplot(fig)

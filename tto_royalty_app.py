@@ -19,7 +19,7 @@ def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, mar
         penetrated_market = projected_market * (market_penetration / 100)
         annual_royalty = penetrated_market * (royalty_rate / 100)
         total_royalty += annual_royalty
-        results.append({"Year": year, "Market Size": projected_market / 1_000_000, "Penetrated Market": penetrated_market / 1_000_000, "Annual Royalty": annual_royalty / 1_000_000})
+        results.append({"Year": year, "Penetrated Market": penetrated_market / 1_000_000, "Annual Royalty": annual_royalty / 1_000_000})
     
     df = pd.DataFrame(results)
     return df, total_royalty
@@ -41,15 +41,13 @@ df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, r
 st.subheader("📈 Annual Royalty Revenue Breakdown")
 st.dataframe(df)
 
-# Simplified Plot
+# Simplified Plot Focusing on Royalty & Penetrated Market
 fig, ax = plt.subplots(figsize=(10, 5))
-ax.plot(df["Year"], df["Market Size"], label="Projected Market Size", marker="o", color='blue')
-ax.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green')
-ax.plot(df["Year"], df["Annual Royalty"], label="Annual Royalty Revenue", marker="s", color='red')
-
+ax.plot(df["Year"], df["Penetrated Market"], label="Penetrated Market", marker="^", color='green', linewidth=2)
+ax.plot(df["Year"], df["Annual Royalty"], label="Annual Royalty Revenue", marker="s", color='red', linewidth=2)
 ax.set_xlabel("Year")
 ax.set_ylabel("Value ($M)")
-ax.set_title("Market Growth, Penetration & Royalty Projections")
+ax.set_title("Market Penetration & Royalty Revenue Projections")
 ax.legend()
 ax.grid()
 

@@ -44,7 +44,7 @@ if st.button("Calculate Royalty Projections"):
     df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
     
     # Display Data Table with Proper Formatting
-    st.subheader("📈 Annual Royalty Revenue Breakdown - Values in Millions or Billions")
+    st.subheader("📈 Annual Royalty Revenue Breakdown")
     st.dataframe(df.style.set_properties(subset=["Annual Royalty ($M)"], **{"font-weight": "bold"}))
     
     # Dual Y-Axis Plot

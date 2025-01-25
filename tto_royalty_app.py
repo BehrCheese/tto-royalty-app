@@ -9,24 +9,30 @@ def format_large_number(value):
         return f"${value / 1000:.2f}B"
     return f"${value:.2f}M"
 
-# Function to calculate dynamic market penetration based on adoption curve
-def calculate_penetration_curve(years, curve_type):
-    if curve_type == "Conservative":
-        penetration_rates = [0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.28, 0.27, 0.25, 0.20]  # Peaks then slightly declines
-    elif curve_type == "Standard":
-        penetration_rates = [0.02, 0.10, 0.25, 0.40, 0.55, 0.65, 0.70, 0.68, 0.65, 0.60]  # Peaks around year 6-7
-    else:  # Aggressive
-        penetration_rates = [0.05, 0.15, 0.35, 0.55, 0.75, 0.85, 0.90, 0.88, 0.85, 0.80]  # Peaks aggressively then slightly declines
+# Function to calculate market penetration with a peak
+def calculate_penetration_curve(years, initial_penetration):
+    penetration_rates = [initial_penetration / 100]
+    peak_penetration = min(0.30, penetration_rates[0] + 0.25)  # Cap peak at 30%
     
+    for i in range(1, years):
+        if i < 3:
+            penetration_rates.append(penetration_rates[-1] + 0.05)  # Slow uptake
+        elif i < 7:
+            penetration_rates.append(penetration_rates[-1] + 0.10)  # Rapid growth
+        elif i == 7 or i == 8:
+            penetration_rates.append(peak_penetration)  # Peak
+        else:
+            penetration_rates.append(penetration_rates[-1] - 0.05)  # Decline/Stabilization
+        penetration_rates[-1] = max(min(penetration_rates[-1], peak_penetration), penetration_rates[0])
     return penetration_rates[:years]
 
 # Function to calculate royalty revenue
-def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, adoption_curve):
+def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, initial_penetration):
     projected_market = market_size * 1_000_000  # Convert from $M to $
     total_royalty = 0
     results = []
     
-    penetration_rates = calculate_penetration_curve(royalty_term, adoption_curve)
+    penetration_rates = calculate_penetration_curve(royalty_term, initial_penetration)
     
     for i, year in enumerate(range(market_entry_year, market_entry_year + royalty_term)):
         projected_market *= (1 + cagr / 100)
@@ -52,15 +58,10 @@ market_entry_year = st.number_input("Anticipated Year of Market Entry", min_valu
 royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=10, value=10)
 market_size = st.number_input("Current Market Size ($M)", min_value=1, value=500, step=1)
 cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=1, max_value=20, value=6, step=1)
-adoption_curve = st.selectbox("Select Market Adoption Curve", ["Conservative", "Standard", "Aggressive"], index=1)
-
-st.markdown("### Market Penetration Curve Details:")
-st.markdown("- **Conservative:** Slow initial uptake, peaks at ~30%, then slightly declines.")
-st.markdown("- **Standard:** Moderate growth, peaks at ~70% around year 6-7, then stabilizes.")
-st.markdown("- **Aggressive:** Rapid early uptake, peaks at ~90%, then slightly declines as competitors enter.")
+initial_penetration = st.number_input("Initial Market Penetration (%)", min_value=1, max_value=10, value=3, step=1)
 
 if st.button("Calculate Royalty Projections"):
-    df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, adoption_curve)
+    df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, initial_penetration)
     
     # Display Data Table with Proper Formatting
     st.subheader("📈 Annual Royalty Revenue Breakdown - Values in Millions or Billions")

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 
@@ -8,22 +9,38 @@ def format_large_number(value):
         return f"${value / 1000:.2f}B"
     return f"${value:.2f}M"
 
+# Function to calculate dynamic market penetration based on adoption curve
+def calculate_penetration_curve(years, curve_type):
+    if curve_type == "Conservative":
+        peak_penetration = 0.3  # 30% peak
+        growth_rates = [0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.28, 0.29, 0.30, 0.30]
+    elif curve_type == "Standard":
+        peak_penetration = 0.6  # 60% peak
+        growth_rates = [0.02, 0.10, 0.20, 0.35, 0.50, 0.60, 0.60, 0.60, 0.60, 0.60]
+    else:  # Aggressive
+        peak_penetration = 0.9  # 90% peak
+        growth_rates = [0.05, 0.15, 0.30, 0.50, 0.75, 0.90, 0.90, 0.90, 0.90, 0.90]
+    
+    return growth_rates[:years]
+
 # Function to calculate royalty revenue
-def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration):
+def calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, adoption_curve):
     projected_market = market_size * 1_000_000  # Convert from $M to $
     total_royalty = 0
     results = []
     
-    for year in range(market_entry_year, market_entry_year + royalty_term):
+    penetration_rates = calculate_penetration_curve(royalty_term, adoption_curve)
+    
+    for i, year in enumerate(range(market_entry_year, market_entry_year + royalty_term)):
         projected_market *= (1 + cagr / 100)
-        penetrated_market = projected_market * (market_penetration / 100)
+        penetrated_market = projected_market * penetration_rates[i]
         annual_royalty = penetrated_market * (royalty_rate / 100)
         total_royalty += annual_royalty
         results.append({
             "Year": str(year),  # Ensure years are strings to prevent commas
             "Market Size": format_large_number(projected_market / 1_000_000),
             "Penetrated Market": format_large_number(penetrated_market / 1_000_000),
-            "Annual Royalty": format_large_number(annual_royalty / 1_000_000)  # Remove bolding for formatting consistency
+            "Annual Royalty": format_large_number(annual_royalty / 1_000_000)
         })
     
     df = pd.DataFrame(results)
@@ -35,13 +52,13 @@ st.title("📊 Royalty Analysis")
 # User Inputs
 royalty_rate = st.number_input("Minimum Expected Royalty Rate (%)", min_value=0.1, max_value=20.0, value=5.0, step=0.1)
 market_entry_year = st.number_input("Anticipated Year of Market Entry", min_value=2024, max_value=2050, value=2026, step=1)
-royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=20, value=10)
+royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=10, value=10)
 market_size = st.number_input("Current Market Size ($M)", min_value=1, value=500, step=1)
 cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=1, max_value=20, value=6, step=1)
-market_penetration = st.number_input("Expected Market Penetration (%)", min_value=5, max_value=100, value=10, step=5)
+adoption_curve = st.selectbox("Select Market Adoption Curve", ["Conservative", "Standard", "Aggressive"], index=1)
 
 if st.button("Calculate Royalty Projections"):
-    df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, market_penetration)
+    df, total_royalty = calculate_royalty_revenue(royalty_rate, market_entry_year, royalty_term, market_size, cagr, adoption_curve)
     
     # Display Data Table with Proper Formatting
     st.subheader("📈 Annual Royalty Revenue Breakdown - Values in Millions or Billions")

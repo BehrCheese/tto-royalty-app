@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import time
 
 # Function to format large numbers
 def format_large_number(value):
@@ -59,13 +60,12 @@ ax1.grid()
 
 st.pyplot(fig)
 
-# Display Financial Estimates
-st.subheader("💰 Financial Estimates")
-st.write(f"**Total Estimated Royalty Revenue Over {royalty_term} Years:** {format_large_number(total_royalty / 1_000_000)}")
+# Display High-Value Opportunity Notification
+st.markdown("---")
+st.markdown(f"## 🎉 **Total Estimated Royalty Revenue Over {royalty_term} Years: {format_large_number(total_royalty / 1_000_000)}**")
 
-# High-Value Opportunity (HVO) Indicator
-st.subheader("📊 High-Value Opportunity Indicator")
 if total_royalty >= 30_000_000:
-    st.success("🎉 Congrats! This is a High-Value Opportunity (HVO) expected to generate over $30M in royalties!")
-else:
-    st.warning("😞 Unfortunately, this opportunity is expected to generate less than $30M in royalties.")
+    with st.spinner("Analyzing opportunity..."):
+        time.sleep(1)
+    st.balloons()
+    st.success("🎊 **Congrats! This is a High-Value Opportunity (HVO) expected to generate over $30M in royalties!** 🎊")

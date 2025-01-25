@@ -32,7 +32,7 @@ royalty_rate = st.number_input("Minimum Expected Royalty Rate (%)", min_value=0.
 market_entry_year = st.number_input("Anticipated Year of Market Entry", min_value=2024, max_value=2050, value=2026, step=1)
 royalty_term = st.slider("Royalty Term Length (Years)", min_value=1, max_value=20, value=10)
 market_size = st.number_input("Current Market Size ($M)", min_value=1, value=500, step=1)
-cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=0.1, max_value=20.0, value=6.0)
+cagr = st.number_input("Compound Annual Growth Rate (CAGR, %)", min_value=1, max_value=20, value=6, step=1)
 market_penetration = st.number_input("Expected Market Penetration (%)", min_value=5, max_value=100, value=10, step=5)
 
 if st.button("Calculate Royalty Projections"):
